@@ -1,50 +1,33 @@
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.Map;
 
 public class StatementPrinter {
 
-    public String print(Invoice invoice, Map<String, Play> plays) {
-        var totalAmount = 0;
-        var volumeCredits = 0;
-        var result = String.format("Statement for %s\n", invoice.customer);
+    private static final NumberFormat formatting = NumberFormat.getCurrencyInstance(Locale.US);
+    private final StringBuilder result = new StringBuilder();
 
-        NumberFormat frmt = NumberFormat.getCurrencyInstance(Locale.US);
+    public String print(Invoice invoice) {
 
-        for (var perf : invoice.performances) {
-            var play = plays.get(perf.playID);
-            var thisAmount = 0;
+        //Calculate totalAmount for each performance
+        int totalAmount = invoice.getPerformances().stream().mapToInt(p -> p.getPlay().getType()
+                .calculateAmountForPerformance(p.getAudience())).sum();
+        //Calculate volumeCredits for each performance
+        int volumeCredits = invoice.getPerformances().stream().mapToInt(p -> p.getPlay().getType()
+                .calculateVolumeCredit(p.getAudience())).sum();
 
-            switch (play.type) {
-                case "tragedy":
-                    thisAmount = 40000;
-                    if (perf.audience > 30) {
-                        thisAmount += 1000 * (perf.audience - 30);
-                    }
-                    break;
-                case "comedy":
-                    thisAmount = 30000;
-                    if (perf.audience > 20) {
-                        thisAmount += 10000 + 500 * (perf.audience - 20);
-                    }
-                    thisAmount += 300 * perf.audience;
-                    break;
-                default:
-                    throw new Error("unknown type: ${play.type}");
-            }
+        //Print to file
+        result.append(String.format("Statement for %s\n", invoice.getCustomer()));
 
-            // add volume credits
-            volumeCredits += Math.max(perf.audience - 30, 0);
-            // add extra credit for every ten comedy attendees
-            if ("comedy".equals(play.type)) volumeCredits += Math.floor(perf.audience / 5);
+        //Add information into file about each type of play
+        invoice.getPerformances().forEach(p ->
+            result.append(String.format("  %s: %s (%s seats)\n",
+                    p.getPlay().getName(),
+                    formatting.format(p.getPlay().getType().calculateAmountForPerformance(p.getAudience()) / 100),
+                    p.getAudience())));
 
-            // print line for this order
-            result += String.format("  %s: %s (%s seats)\n", play.name, frmt.format(thisAmount / 100), perf.audience);
-            totalAmount += thisAmount;
-        }
-        result += String.format("Amount owed is %s\n", frmt.format(totalAmount / 100));
-        result += String.format("You earned %s credits\n", volumeCredits);
-        return result;
+        //Print to file
+        result.append(String.format("Amount owed is %s\n", formatting.format(totalAmount / 100)));
+        result.append(String.format("You earned %s credits\n", volumeCredits));
+        return result.toString();
     }
-
 }
