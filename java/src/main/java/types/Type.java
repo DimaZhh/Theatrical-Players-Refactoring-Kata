@@ -1,6 +1,6 @@
-package playtypes;
+package types;
 
-public interface PlayType {
+public interface Type {
 
     int calculateAmountForPerformance(int audience);
     int calculateVolumeCredit(int audience);

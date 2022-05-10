@@ -1,7 +1,7 @@
-import playtypes.Comedy;
-import playtypes.PlayType;
-import playtypes.Tragedy;
-import playtypes.UnknownType;
+import types.ComedyType;
+import types.Type;
+import types.TragedyType;
+import types.UnknownType;
 
 import static enums.PlayTypes.COMEDY;
 import static enums.PlayTypes.TRAGEDY;
@@ -9,7 +9,7 @@ import static enums.PlayTypes.TRAGEDY;
 public class Play {
 
     private String name;
-    private PlayType type;
+    private Type type;
 
     public Play(String name, String type) {
         this.name = name;
@@ -20,7 +20,7 @@ public class Play {
         this.name = name;
     }
 
-    public void setType(PlayType type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
@@ -28,15 +28,15 @@ public class Play {
         return name;
     }
 
-    public PlayType getType() {
+    public Type getType() {
         return type;
     }
 
-    private PlayType generateTypeFactory(String type) {
+    private Type generateTypeFactory(String type) {
         if (type.equals(COMEDY.getValue())) {
-            return new Comedy();
+            return new ComedyType();
         } else if (type.equals(TRAGEDY.getValue())) {
-            return new Tragedy();
+            return new TragedyType();
         } else {
             return new UnknownType();
         }

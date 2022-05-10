@@ -1,6 +1,6 @@
-package playtypes;
+package types;
 
-public class UnknownType implements PlayType{
+public class UnknownType implements Type {
 
     @Override
     public int calculateAmountForPerformance(int audience) {

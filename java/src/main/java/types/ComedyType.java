@@ -1,6 +1,6 @@
-package playtypes;
+package types;
 
-public class Comedy implements PlayType{
+public class ComedyType implements Type {
 
     @Override
     public int calculateAmountForPerformance(int audience) {
